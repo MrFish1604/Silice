@@ -37,8 +37,15 @@ unit audio(input uint8 audio_in,output uint4 audio_out)
   uint8 v = 0;
   always {
     audio_out = v <= audio_in ? 4b1 : 0;
-    v = (v == 255) ? 0 : v+1; //(v==255) ? 0 : (v+1);
-    // audio_out = audio_in[4,4];
+    v = (v == 255) ? 0 : v+1;
+  }
+}
+
+unit pwm(input uint8 value, output uint1 out){ // TODO
+  uint8 v = 0;
+  always{
+    out = v<=value ? 1 : 0;
+    v = v == 255 ? 0 : v+1;
   }
 }
 
@@ -135,6 +142,20 @@ $$end
 	uint4       prev_mem_rw(0);
   uint32      prev_wdata(0);
 
+  uint8 led0(0); uint8 led1(0);
+  uint8 led2(0); uint8 led3(0);
+  uint8 led4(0); uint8 led5(0);
+  uint8 led6(0); uint8 led7(0);
+
+  pwm _(value <: led0, out :> leds[0,1]);
+  pwm _(value <: led1, out :> leds[1,1]);
+  pwm _(value <: led2, out :> leds[2,1]);
+  pwm _(value <: led3, out :> leds[3,1]);
+  pwm _(value <: led4, out :> leds[4,1]);
+  pwm _(value <: led5, out :> leds[5,1]);
+  pwm _(value <: led6, out :> leds[6,1]);
+  pwm _(value <: led7, out :> leds[7,1]);
+
   // --- SOC logic, the always block is always active
   always {
     display.enable     = 0;       // maintain display enable low (pulses on use)
@@ -183,7 +204,19 @@ $$end
     if (peripheral_w & ~audio_access
                                     ) {
       /// LEDs
-      leds           = leds_access ? prev_wdata[0,8] : leds;
+      // leds           = leds_access ? prev_wdata[0,8] : leds;
+      if(leds_access){
+        switch(prev_wdata[0,3]){
+          case 0: {led0 = prev_wdata[8,8];}
+          case 1: {led1 = prev_wdata[8,8];}
+          case 2: {led2 = prev_wdata[8,8];}
+          case 3: {led3 = prev_wdata[8,8];}
+          case 4: {led4 = prev_wdata[8,8];}
+          case 5: {led5 = prev_wdata[8,8];}
+          case 6: {led6 = prev_wdata[8,8];}
+          case 7: {led7 = prev_wdata[8,8];}
+        }
+      }
       /// display
       if (display_direct_access) {
         // -> whether to send command or data

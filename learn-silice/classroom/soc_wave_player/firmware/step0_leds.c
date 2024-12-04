@@ -8,18 +8,26 @@
 #include "config.h"
 #include "std.h"
 
+void set_led(int value, int l){
+  *LEDS = (value<<8) | l;
+}
+
 void main()
 {
-  int leds = 1;
+  int led  = 0;
   int dir  = 0;
+  int intensity = 0;
   while (1) {
     pause(1000000);
-    if (leds == 128 || leds == 1) { dir = 1-dir; }
-    if (dir) {
-      leds = leds << 1;
-    } else {
-      leds = leds >> 1;
+    if (intensity == 0 || intensity == 255) {
+      dir = 1-dir;
     }
-    *LEDS = leds;
+    if (dir) {
+      ++ intensity;
+    } else {
+      -- intensity;
+    }
+    for(int i=0; i<8; i++)
+      set_led(intensity,i);
   }
 }
