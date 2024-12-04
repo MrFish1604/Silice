@@ -114,6 +114,10 @@ if [[ -n "${VGA}" ]]; then
   VERILATOR_LIB_SRC+=$VERILATOR_GFX_SRC
   VERILATOR_LIB_SRC+=" $VERILATOR_LIB_DIR/VgaChip.cpp"
 fi
+if [[ -n "${PWM_AUDIO}" ]]; then
+  DEFINES+="-CFLAGS -DPWM_AUDIO "
+  VERILATOR_LIB_SRC+=" $VERILATOR_LIB_DIR/PWMAudio.cpp"
+fi
 if [[ -n "${SDRAM}" ]]; then
   DEFINES+="-CFLAGS -DSDRAM "
   VERILATOR_LIB_SRC+=" $VERILATOR_LIB_DIR/sdr_sdram.cpp"
@@ -142,7 +146,7 @@ echo "defines: $DEFINES"
 touch Vtop__pch.h.slow
 touch Vtop__pch.h.fast
 
-verilator -Wno-fatal -Wno-PINMISSING -Wno-WIDTH -O3 -cc build.v --report-unoptflat $OPT --top-module top --exe $VERILATOR_LIB_SRC -CFLAGS "-include" -CFLAGS "../verilator_callbacks.h" -CFLAGS "-include" -CFLAGS "custom.h" -CFLAGS "-I$SILICE_DIR/../frameworks/verilator/" -CFLAGS "-I../"  -CFLAGS "-I../LibSL/" -CFLAGS "-DNO_SHLWAPI" $DEFINES $LDFLAGS
+verilator --x-initial unique -Wno-fatal -Wno-PINMISSING -Wno-WIDTH -O3 -cc build.v --report-unoptflat $OPT --top-module top --exe $VERILATOR_LIB_SRC -CFLAGS "-std=c++14" -CFLAGS "-include" -CFLAGS "../verilator_callbacks.h" -CFLAGS "-include" -CFLAGS "custom.h" -CFLAGS "-I$SILICE_DIR/../frameworks/verilator/" -CFLAGS "-I../"  -CFLAGS "-I../LibSL/" -CFLAGS "-DNO_SHLWAPI" $DEFINES $LDFLAGS
 cd obj_dir
 
 $MAKE -f Vtop.mk -j$(nproc)
