@@ -32,19 +32,21 @@ group mem_io
 // Audio output unit
 // --------------------------------------------------
 
+$$AUDIO_PWM_PERIOD = 10
+$$MAX_PWM_CYCLES = math.floor(2^AUDIO_PWM_PERIOD-1)
 unit audio(input uint8 audio_in,output uint4 audio_out)
 {
-  uint8 v = 0;
+  uint$AUDIO_PWM_PERIOD$ v = 0;
   always {
-    audio_out = v <= audio_in ? 4b1 : 0;
-    v = (v == 255) ? 0 : v+1;
+    audio_out = v[$AUDIO_PWM_PERIOD-8$, 8] <= audio_in ? 4b1 : 0;
+    v = (v == $MAX_PWM_CYCLES$) ? 0 : v+1;
   }
 }
 
 unit pwm(input uint8 value, output uint1 out){ // TODO
   uint8 v = 0;
   always{
-    out = v<=value ? 1 : 0;
+    out = v<value ? 1 : 0;
     v = v == 255 ? 0 : v+1;
   }
 }
