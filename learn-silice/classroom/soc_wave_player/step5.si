@@ -32,11 +32,13 @@ group mem_io
 // Audio output unit
 // --------------------------------------------------
 
-unit audio(input  uint8 audio_in,output uint4 audio_out)
+unit audio(input uint8 audio_in,output uint4 audio_out)
 {
+  uint8 v = 0;
   always {
-    // simple passthrough
-    audio_out = audio_in[4,4];
+    audio_out = v <= audio_in ? 4b1 : 0;
+    v = (v == 255) ? 0 : v+1; //(v==255) ? 0 : (v+1);
+    // audio_out = audio_in[4,4];
   }
 }
 
