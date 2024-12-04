@@ -11,12 +11,12 @@ SECTIONS {
 
   .text 0x00000000 : {
         crt0.o (.text)
-        *(.text)
-        *(.sdata)
-        *(.srodata)
-        *(.rodata)
-        *(.rodata.str1.4)
-        *(.data)
-        *(.sbss)
+        *(.text*)
+        *(.sdata*)
+        *(.srodata*)
+        *(.rodata*)
+        *(.rodata.str1.4*)
+        *(.data*)
+        *(.sbss*)
   } >ram
 }
