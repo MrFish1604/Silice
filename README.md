@@ -1,6 +1,7 @@
 # Silice
 *A language for hardcoding algorithms with pipelines and parallelism into FPGA hardware*
 
+> This repository is a fork of the original **Silice** repository by **Sylvain Lefebvre**. This fork has been created in the context of the CSsP course at TELECOM Nancy taught by Sylvain Lefebvre. The goal is to make a wav player *(see [here](learn-silice/classroom/soc_wave_player))*. The original repository can be found [here](https://github.com/sylefeb/Silice).
 ---
 **Quick links:**
 - To set up Silice, see the [getting started](GetStarted.md) guide.
