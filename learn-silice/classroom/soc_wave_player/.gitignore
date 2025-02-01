@@ -1,0 +1,5 @@
+.vscode
+*.s
+*.hex
+*.raw
+*.wav

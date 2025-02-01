@@ -1,5 +1,14 @@
 FIRMWARE ?= step0_leds
+CABILLOT_FIRMWARE ?= step9_cabillot
 BOARD ?= ulx3s
+
+cabillot: cabillot.si
+	make -C firmware $(CABILLOT_FIRMWARE)
+ifeq ($(BOARD),verilator)
+	silice-make.py -s $@.si -b $(BOARD) -p basic,oled -o BUILD_$(subst :,_,$@) $(ARGS)
+else
+	silice-make.py -s $@.si -b $(BOARD) -p basic,audio,oled,buttons,sdcard -o BUILD_$(subst :,_,$@) $(ARGS)
+endif
 
 step0: step0.si
 	make -C firmware $(FIRMWARE)
