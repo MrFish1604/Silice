@@ -8,6 +8,10 @@
 #include "display.h"
 #include "printf.h"
 
+void set_led(int value, int l){
+	*LEDS = (value<<8) | l;
+}
+
 char list_dir(const char* path, file_info_t* files){
     #ifdef FAKE_SDCARD
     for(int i=0; i<FAKE_SDCARD; i++){
@@ -81,4 +85,14 @@ void read_audio_file(const char* path){
 	}
 	clear_audio();
 	fl_fclose(f);
+}
+
+void strncat(char* dest, const char* src, int n){
+    int i = 0;
+    while(dest[i] != '\0') i++;
+    for(int j=0; i+j<n; j++){
+        dest[i+j] = src[j];
+        if(src[j] == '\0') return;
+    }
+    dest[i+n] = '\0';
 }
