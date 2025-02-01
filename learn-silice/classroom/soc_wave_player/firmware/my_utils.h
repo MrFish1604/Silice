@@ -4,6 +4,8 @@
 #define MAX_FILES 32
 #define MAX_FILENAME_LENGTH 64
 
+#define AUDIO_BLOCK_SIZE 512
+
 #define BTN_ZERO 2
 #define BTN_ONE 4
 #define BTN_UP 8
@@ -22,6 +24,8 @@ typedef struct file_info file_info_t;
 
 char list_dir(const char* path, file_info_t* files);
 void clprint(const char* str);
+void clear_audio();
+void read_audio_file(const char* path);
 
 
 #endif

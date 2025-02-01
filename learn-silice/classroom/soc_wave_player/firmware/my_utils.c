@@ -45,3 +45,40 @@ void clprint(const char* str){
     printf("%s", str);
     display_refresh();
 }
+
+void clear_audio()
+{
+	// wait for a buffer swap (sync)
+	int *addr = (int*)(*AUDIO);
+	while (addr == (int*)(*AUDIO)) { }
+	// go ahead
+	for (int b=0 ; b<2 ; ++b) {
+		// read directly in hardware buffer
+		addr = (int*)(*AUDIO);
+		// clear buffer
+		memset(addr,0,512);
+		// wait for buffer swap
+		while (addr == (int*)(*AUDIO)) { }
+	}
+}
+
+void read_audio_file(const char* path){
+	clear_audio();
+	FL_FILE *f = fl_fopen(path, "rb");
+	if (f == NULL) {
+		// error, no file
+		printf("file not found.\n");
+		printf(path);
+		printf("\n");
+		display_refresh();
+		return;
+	}
+	while(1){
+		int* addr = (int*)(*AUDIO);
+		int sz = fl_fread(addr, 1, AUDIO_BLOCK_SIZE, f);
+		if(sz<AUDIO_BLOCK_SIZE) break; // EOF
+		while(addr == (int*)(*AUDIO)); // wait for buffer swap
+	}
+	clear_audio();
+	fl_fclose(f);
+}
