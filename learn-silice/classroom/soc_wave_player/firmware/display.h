@@ -4,6 +4,7 @@
 
 #pragma once
 
+void display_clear();
 void display_set_cursor(int x,int y);
 void display_set_front_back_color(unsigned char f,unsigned char b);
 void display_putchar(int c);

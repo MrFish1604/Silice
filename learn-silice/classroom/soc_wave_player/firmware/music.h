@@ -13,6 +13,13 @@ struct music_info{
 };
 typedef struct music_info music_info_t;
 
+struct playlist{
+    char name[MAX_MUSIC_NAME_LENGTH+1];
+    music_info_t** musics;
+    unsigned char size;
+};
+typedef struct playlist playlist_t;
+
 char list_music(music_info_t* musics);
 
 void play_music(const music_info_t* music);

@@ -28,6 +28,10 @@ void display_set_cursor(int x,int y)
   cursor_y = y;
 }
 
+void display_clear(){
+  memset((void*)display_framebuffer(), 0x00, 128*128);
+}
+
 void display_set_front_back_color(unsigned char f,unsigned char b)
 {
   front_color = f;
