@@ -10,6 +10,8 @@
 
 #include "fat_io_lib/src/fat_filelib.h"
 
+void play_music_callback(char* loop);
+
 void main()
 {
 	clear_audio();
@@ -80,8 +82,15 @@ void main()
 			current_music++;
 		}
 		if(*BUTTONS & BTN_RIGHT){
-			play_music(current_playlist->musics[current_music]);
+			play_music(current_playlist->musics[current_music], play_music_callback);
 		}
 	}
 
+}
+
+void play_music_callback(char* loop){
+	if(*BUTTONS & BTN_ZERO){
+		*loop = 0;// set loop to 0 to stop the main loop in read_audio_file
+		set_led(255, 1);
+	}
 }

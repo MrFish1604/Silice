@@ -66,7 +66,7 @@ void clear_audio()
 	}
 }
 
-void read_audio_file(const char* path){
+void read_audio_file(const char* path, void (*loop_callback)(char*)){
 	clear_audio();
 	FL_FILE *f = fl_fopen(path, "rb");
     int n = 0;
@@ -87,11 +87,14 @@ void read_audio_file(const char* path){
 		display_refresh();
 		return;
 	}
-	while(1){
+    char loop = 1;
+	while(loop){
 		int* addr = (int*)(*AUDIO);
 		int sz = fl_fread(addr, 1, AUDIO_BLOCK_SIZE, f);
 		if(sz<AUDIO_BLOCK_SIZE) break; // EOF
-		while(addr == (int*)(*AUDIO)); // wait for buffer swap
+		while(addr == (int*)(*AUDIO)){ // wait for buffer swap
+            if(loop_callback != NULL) loop_callback(&loop);
+        }
 	}
 	clear_audio();
 	fl_fclose(f);

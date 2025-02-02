@@ -32,7 +32,7 @@ void set_led(int value, int l);
 char list_dir(const char* path, file_info_t* files);
 void clprint(const char* str);
 void clear_audio();
-void read_audio_file(const char* path);
+void read_audio_file(const char* path, void (*loop_callback)(char*));
 
 
 void strncat(char* dest, const char* src, int n);
