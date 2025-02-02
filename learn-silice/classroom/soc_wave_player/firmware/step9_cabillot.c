@@ -6,11 +6,13 @@
 #include "printf.h"
 
 #include "my_utils.h"
+#include "music.h"
 
 #include "fat_io_lib/src/fat_filelib.h"
 
 void main()
 {
+	clear_audio();
 	LEDS_OFF();
 	// install putchar handler for printf
 	f_putchar = display_putchar;
@@ -39,8 +41,8 @@ void main()
 	display_refresh();
 	LEDS_OFF();
 
-	file_info_t musics[MAX_FILES];
-	const int n_musics = list_dir(MUSIC_DIR, musics);
+	music_info_t musics[MAX_MUSICS];
+	const int n_musics = list_music(musics);
 	if(n_musics==0){
 		clprint("No music found");
 		return;
@@ -52,13 +54,13 @@ void main()
 
 	int current_music = 0;
 	while(1){
-		clprint(musics[current_music].name);
-		char path[MAX_FILENAME_LENGTH+1] = MUSIC_DIR;
-		strncat(path, musics[current_music].name, MAX_FILENAME_LENGTH);
-		// clprint(path);
-		// while(1);
-		// strncpy(path+1, musics[current_music].name, MAX_FILENAME_LENGTH-1);
-		read_audio_file(path);
+		oled_clear(0);
+		display_set_cursor(0,0);
+		display_set_front_back_color(255, 0);
+		printf("Playing %d> %s\n", current_music, musics[current_music].name);
+		// printf("%s\n", musics[current_music].path); // Never print this !!!
+		display_refresh();
+		read_audio_file(musics[current_music].path);
 		current_music = (current_music+1)%n_musics;
 	}
 

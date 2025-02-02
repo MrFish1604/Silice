@@ -71,10 +71,14 @@ void read_audio_file(const char* path){
 	FL_FILE *f = fl_fopen(path, "rb");
 	if (f == NULL) {
 		// error, no file
-		printf("file not found.\n");
-		printf(path);
-		printf("\n");
+		printf("RAF: file not found.\n");
+		printf("%s\n", path);
+        int k=0;
+        while(path[k] != '\0'){
+            printf("%d ", path[k++]);
+        }
 		display_refresh();
+        while(1);
 		return;
 	}
 	while(1){

@@ -18,7 +18,6 @@
 #define LEDS_OFF() set_led(0,0);set_led(0,1);set_led(0,2);set_led(0,3);set_led(0,4);set_led(0,5);set_led(0,6);set_led(0,7)
 #define LEDS_ON() set_led(255,0);set_led(255,1);set_led(255,2);set_led(255,3);set_led(255,4);set_led(255,5);set_led(255,6);set_led(255,7)
 
-#define MUSIC_DIR "/musics/"
 #define IMAGE_DIR "/imgs/"
 
 // #define FAKE_SDCARD 6
