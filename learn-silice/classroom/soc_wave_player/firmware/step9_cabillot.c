@@ -18,7 +18,7 @@ void main()
 	oled_init();
 	oled_fullscreen();
 
-	memset(display_framebuffer(),0x00,128*128);
+	memset((void*)display_framebuffer(),0x00,128*128);
 	display_refresh();
 
 	display_set_cursor(0,0);
