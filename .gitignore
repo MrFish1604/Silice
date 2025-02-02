@@ -19,3 +19,5 @@ antlr/*Parser.*
 
 # Nix
 result
+
+*.tgz
