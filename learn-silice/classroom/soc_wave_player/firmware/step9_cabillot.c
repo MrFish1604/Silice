@@ -54,13 +54,14 @@ void main()
 
 	int current_music = 0;
 	while(1){
-		oled_clear(0);
-		display_set_cursor(0,0);
-		display_set_front_back_color(255, 0);
-		printf("Playing %d> %s\n", current_music, musics[current_music].name);
-		// printf("%s\n", musics[current_music].path); // Never print this !!!
-		display_refresh();
-		read_audio_file(musics[current_music].path);
+		// oled_clear(0);
+		// display_set_cursor(0,0);
+		// display_set_front_back_color(255, 0);
+		// printf("Playing %d> %s\n", current_music, musics[current_music].name);
+		// // printf("%s\n", musics[current_music].path); // Never print this !!!
+		// display_refresh();
+		// read_audio_file(musics[current_music].path);
+		play_music(musics + current_music);
 		current_music = (current_music+1)%n_musics;
 	}
 

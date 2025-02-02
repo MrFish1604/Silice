@@ -30,3 +30,13 @@ char list_music(music_info_t* musics){
     fl_closedir(&dirstat);
     return n_files;
 }
+
+void play_music(const music_info_t* music){
+    oled_clear(0);
+    display_set_cursor(0,0);
+    display_set_front_back_color(255, 0);
+    printf("Playing %s\n", music->name);
+    display_refresh();
+
+    read_audio_file(music->path);
+}

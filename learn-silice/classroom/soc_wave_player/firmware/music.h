@@ -15,4 +15,6 @@ typedef struct music_info music_info_t;
 
 char list_music(music_info_t* musics);
 
+void play_music(const music_info_t* music);
+
 #endif
