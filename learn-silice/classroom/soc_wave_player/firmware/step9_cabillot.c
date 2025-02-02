@@ -10,7 +10,7 @@
 
 #include "fat_io_lib/src/fat_filelib.h"
 
-void play_music_callback(char* loop);
+void play_music_callback(char* loop, char* buffer);
 
 void main()
 {
@@ -76,10 +76,10 @@ void main()
 		display_refresh();
 
 		if(*BUTTONS & BTN_UP){
-			current_music--;
+			current_music = (current_music==0 ? current_playlist->size : current_music)-1;
 		}
 		if(*BUTTONS & BTN_DOWN){
-			current_music++;
+			current_music = (current_music+1)%current_playlist->size;
 		}
 		if(*BUTTONS & BTN_RIGHT){
 			play_music(current_playlist->musics[current_music], play_music_callback);
@@ -88,9 +88,23 @@ void main()
 
 }
 
-void play_music_callback(char* loop){
-	if(*BUTTONS & BTN_ZERO){
+void play_music_callback(char* loop, char* buffer){
+	if(*BUTTONS & BTN_LEFT){
 		*loop = 0;// set loop to 0 to stop the main loop in read_audio_file
-		set_led(255, 1);
+		// set_led(255, 1);
+	}
+	unsigned int value = 0;
+	for(int i=0; i<AUDIO_BLOCK_SIZE; i++){
+		value += buffer[i]>=100 ? buffer[i]-100 : 0;
+	}
+	/*for(int l=0; l<8; l++)
+		set_led(((value>>l) & 0x01) ? 255 : 0, l);*/
+	for(int l=7; l>=0; l--){
+		if((value>>l) & 0x01){
+			for(int j=0; j<=l; j++)
+				set_led(255, j);
+			break;
+		}
+		set_led(0, l);
 	}
 }
