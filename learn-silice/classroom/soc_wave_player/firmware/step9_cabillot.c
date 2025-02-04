@@ -83,7 +83,13 @@ void main()
 			current_music = (current_music+1)%current_playlist->size;
 		}
 		if(*BUTTONS & BTN_RIGHT){
-			play_music(current_playlist->musics[current_music], play_music_callback);
+			while(play_music(current_playlist->musics[current_music], play_music_callback)){
+				if(current_music == current_playlist->size-1){
+					current_music = 0;
+					break;
+				}
+				current_music++;
+			}
 		}
 	}
 

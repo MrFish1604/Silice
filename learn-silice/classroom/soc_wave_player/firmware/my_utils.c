@@ -66,7 +66,11 @@ void clear_audio()
 	}
 }
 
-void read_audio_file(const char* path, void (*loop_callback)(char*, char*, char*)){
+char read_audio_file(const char* path, void (*loop_callback)(char*, char*, char*)){
+    /*
+    * Read an audio file and play it.
+        Returns 0 if an error occured or if loop_callback asked to stop the loop.
+    */
 	clear_audio();
 	FL_FILE *f = fl_fopen(path, "rb");
     int n = 0;
@@ -85,7 +89,7 @@ void read_audio_file(const char* path, void (*loop_callback)(char*, char*, char*
             printf("%d ", path[k++]);
         }
 		display_refresh();
-		return;
+		return 0;
 	}
     char loop = 1;
 	while(loop){
@@ -103,6 +107,7 @@ void read_audio_file(const char* path, void (*loop_callback)(char*, char*, char*
     LEDS_OFF();
 	clear_audio();
 	fl_fclose(f);
+    return loop;
 }
 
 void strncat(char* dest, const char* src, int n){
