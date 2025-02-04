@@ -24,6 +24,6 @@ typedef struct playlist playlist_t;
 char list_music(music_info_t* musics);
 char check_image(music_info_t* musics, int n_musics);
 
-char play_music(const music_info_t* music, void (*loop_callback)(char*, char*, char*));
+char play_music(const music_info_t* music, void (*loop_callback)(char*, char*, char*, char*));
 
 #endif

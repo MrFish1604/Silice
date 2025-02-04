@@ -66,7 +66,7 @@ void clear_audio()
 	}
 }
 
-char read_audio_file(const char* path, void (*loop_callback)(char*, char*, char*)){
+char read_audio_file(const char* path, void (*loop_callback)(char*, char*, char*, char*)){
     /*
     * Read an audio file and play it.
         Returns 0 if an error occured or if loop_callback asked to stop the loop.
@@ -92,6 +92,7 @@ char read_audio_file(const char* path, void (*loop_callback)(char*, char*, char*
 		return 0;
 	}
     char loop = 1;
+    char output_signal = 1;
 	while(loop){
 		char* addr = (char*)(*AUDIO);
         char buffer[AUDIO_BLOCK_SIZE];
@@ -101,13 +102,13 @@ char read_audio_file(const char* path, void (*loop_callback)(char*, char*, char*
         for(int k=0; k<AUDIO_BLOCK_SIZE; k++)
             addr[k] = buffer[k];
 		while(addr == (char*)(*AUDIO) || pause){ // wait for buffer swap
-            if(loop_callback != NULL) loop_callback(&loop, buffer, &pause);
+            if(loop_callback != NULL) loop_callback(&loop, buffer, &pause, &output_signal);
         }
 	}
     LEDS_OFF();
 	clear_audio();
 	fl_fclose(f);
-    return loop;
+    return output_signal;
 }
 
 void strncat(char* dest, const char* src, int n){

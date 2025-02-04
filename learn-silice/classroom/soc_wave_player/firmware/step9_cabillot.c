@@ -10,7 +10,7 @@
 
 #include "fat_io_lib/src/fat_filelib.h"
 
-void play_music_callback(char* loop, char* buffer, char* pause);
+void play_music_callback(char* loop, char* buffer, char* pause, char* output_signal);
 
 void main()
 {
@@ -83,28 +83,51 @@ void main()
 			current_music = (current_music+1)%current_playlist->size;
 		}
 		if(*BUTTONS & BTN_RIGHT){
-			while(play_music(current_playlist->musics[current_music], play_music_callback)){
-				if(current_music == current_playlist->size-1){
-					current_music = 0;
-					break;
+			int signal = play_music(current_playlist->musics[current_music], play_music_callback);
+			while(signal){
+				if(signal == 1){
+					if(current_music == current_playlist->size-1){
+						current_music = 0;
+						break;
+					}
+					current_music++;
 				}
-				current_music++;
+				else if(signal == 2){
+					current_music = (current_music==current_playlist->size-1 ? 0 : current_music+1)
+				}
+				else if(signal == 3){
+					current_music = (current_music==0 ? current_playlist->size : current_music) - 1;
+				}
+				signal = play_music(current_playlist->musics[current_music], play_music_callback);
 			}
 		}
 	}
 
 }
 
-void play_music_callback(char* loop, char* buffer, char* pause){
+void play_music_callback(char* loop, char* buffer, char* pause, char* output_signal){
 	switch(*BUTTONS & ~0x1){
 		case BTN_LEFT:
 			*loop = 0;
 			*pause = 0;
+			*output_signal = 0;
 			break;
 		case BTN_RIGHT:
 			if(!*pause) clear_audio();
 			*pause = !*pause;
 			while(*BUTTONS & BTN_RIGHT); // wait for button release
+			break;
+		case BTN_DOWN:
+			*loop = 0;
+			*pause = 0;
+			*output_signal = 2;
+			break;
+		case BTN_UP:
+			*loop = 0;
+			*pause = 0;
+			*output_signal = 3;
+			break;
+
 	}
 	if(*pause || !*loop){
 		LEDS_OFF();
