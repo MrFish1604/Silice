@@ -55,7 +55,7 @@ char check_image(music_info_t* musics, int n_musics){
             // printf("%s\n", img_names[j]);
             if(strequ(musics[i].name, img_names[j])){
                 musics[i].has_img = 1;
-                printf("ok\n");
+                // printf("ok\n");
                 break;
             }
             // display_refresh();
@@ -83,4 +83,34 @@ char play_music(const music_info_t* music, void (*loop_callback)(char*, char*, c
     }
 
     return read_audio_file(music->path, loop_callback);
+}
+
+char create_playlist(const char* name, playlist_t* playlist, music_info_t* musics, int n_musics){
+    strncpy(playlist->name, name, MAX_MUSIC_NAME_LENGTH);
+    playlist->size = 0;
+    char path[MAX_PATH_LENGTH] = PLAYLIST_DIR;
+    strncat(path, name, MAX_PATH_LENGTH);
+    FL_FILE *f = fl_fopen(path, "rb");
+    if(f == NULL){
+        return -1;
+    }
+    char buffer[MAX_MUSIC_NAME_LENGTH];
+    int sz = fl_fread(buffer, 1, 1, f);
+    int cursor = 1;
+    while(sz == 1){
+        // printf("%c", buffer[cursor-1]);
+        // display_refresh();
+        if(buffer[cursor-1] == '\n'){
+            buffer[cursor-1] = '\0';
+            cursor = 0;
+            for(int m=0; m<n_musics; m++){
+                if(strequ(musics[m].name, buffer)){
+                    playlist->musics[playlist->size++] = musics + m;
+                }
+            }
+        }
+        sz = fl_fread(buffer+cursor, 1, 1, f);
+        cursor++;
+    }
+    WAIT_INPUT();
 }

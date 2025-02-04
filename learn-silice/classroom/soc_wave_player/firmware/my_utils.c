@@ -139,7 +139,7 @@ void display_image_rgb(const char* path, const unsigned char size){
     }
     fl_fclose(f);
 
-        
+
 }
 
 char strequ(const char* s1, const char* s2){

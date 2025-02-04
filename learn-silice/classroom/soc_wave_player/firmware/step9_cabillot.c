@@ -59,7 +59,10 @@ void main()
 		return;
 	}
 
-	playlist_t* current_playlist = &all_musics;
+	playlist_t test_pl;
+	int nm_pl = create_playlist("AShort One", &test_pl, musics, n_musics);
+
+	playlist_t* current_playlist = &test_pl;
 
 	int pulse = 0;
 
@@ -93,7 +96,7 @@ void main()
 					current_music++;
 				}
 				else if(signal == 2){
-					current_music = (current_music==current_playlist->size-1 ? 0 : current_music+1)
+					current_music = (current_music==current_playlist->size-1 ? 0 : current_music+1);
 				}
 				else if(signal == 3){
 					current_music = (current_music==0 ? current_playlist->size : current_music) - 1;

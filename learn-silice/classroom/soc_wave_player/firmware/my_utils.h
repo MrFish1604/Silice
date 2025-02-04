@@ -20,6 +20,8 @@
 
 #define IMAGE_DIR "/imgs/"
 
+#define WAIT_INPUT() while(!(*BUTTONS & BTN_ZERO)); while(*BUTTONS & BTN_ZERO);
+
 // #define FAKE_SDCARD 6
 
 struct file_info{
