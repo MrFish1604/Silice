@@ -46,10 +46,10 @@ void main()
 	music_info_t musics[MAX_MUSICS];
 	const int n_musics = list_music(musics);
 	check_image(musics, n_musics);
-	playlist_t all_musics;
-	all_musics.size = n_musics;
-	strcpy(all_musics.name, "All musics");
-	for(int i=0; i<n_musics; i++) all_musics.musics[i] = musics + i;
+	playlist_t playlists[MAX_FILES];
+	playlists->size = n_musics;
+	strcpy(playlists->name, "All musics");
+	for(int i=0; i<n_musics; i++) playlists->musics[i] = musics + i;
 	if(n_musics==0){
 		clprint("No music found");
 		return;
@@ -59,20 +59,22 @@ void main()
 		return;
 	}
 
-	playlist_t test_pl;
-	int nm_pl = create_playlist("AShort One", &test_pl, musics, n_musics);
+	const int n_playlists = list_playlist(playlists+1, musics, n_musics) + 1;
+	if(n_playlists<=0){
+	    clprint("SD_CARD ERROR");
+	}
 
-	playlist_t* current_playlist = &test_pl;
+	playlist_t* current_playlist = playlists+1;
+
 
 	int pulse = 0;
-
 	int current_music = 1;
 	while(1){
 		display_set_cursor(0,0);
 		display_set_front_back_color(0, 255);
 		display_clear();
 		printf("%s\n", current_playlist->name);
-		
+
 		for(int i=0; i<current_playlist->size; i++){
 			display_set_front_back_color(i==current_music ? 0 : 255, i==current_music ? 255 : 0);
 			printf("%d> %s\n", i, current_playlist->musics[i]->name);
@@ -104,6 +106,7 @@ void main()
 				signal = play_music(current_playlist->musics[current_music], play_music_callback);
 			}
 		}
+	}
 	}
 
 }

@@ -112,5 +112,22 @@ char create_playlist(const char* name, playlist_t* playlist, music_info_t* music
         sz = fl_fread(buffer+cursor, 1, 1, f);
         cursor++;
     }
-    WAIT_INPUT();
+    fl_fclose(f);
+    return playlist->size;
+}
+
+char list_playlist(playlist_t* playlists, music_info_t* musics, int n_musics){
+    FL_DIR dirstat;
+    if(!fl_opendir(PLAYLIST_DIR, &dirstat))
+        return -1;
+    struct fs_dir_ent dirent;
+    char n_files = 0;
+    while(fl_readdir(&dirstat, &dirent) == 0){
+        if(dirent.is_dir) continue;
+        if(create_playlist(dirent.filename, playlists+n_files, musics, n_musics)<0)
+            return -1;
+        n_files++;
+    }
+    fl_closedir(&dirstat);
+    return n_files;
 }

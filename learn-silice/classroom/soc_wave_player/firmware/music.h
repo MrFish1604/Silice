@@ -30,5 +30,6 @@ char check_image(music_info_t* musics, int n_musics);
 char play_music(const music_info_t* music, void (*loop_callback)(char*, char*, char*, char*));
 
 char create_playlist(const char* path, playlist_t* playlist, music_info_t* musics, int n_musics);
+char list_playlist(playlist_t* playlists, music_info_t* musics, int n_musics);
 
 #endif

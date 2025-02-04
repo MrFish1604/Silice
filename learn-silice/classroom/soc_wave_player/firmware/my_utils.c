@@ -43,7 +43,7 @@ char list_dir(const char* path, file_info_t* files){
 }
 
 void clprint(const char* str){
-    oled_clear(0);
+    display_clear();
     display_set_cursor(0,0);
     display_set_front_back_color(255, 0);
     printf("%s", str);
