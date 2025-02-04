@@ -43,6 +43,8 @@ void main()
 	display_refresh();
 	LEDS_OFF();
 
+	printf("Loading musics ...");
+	display_refresh();
 	music_info_t musics[MAX_MUSICS];
 	const int n_musics = list_music(musics);
 	check_image(musics, n_musics);
@@ -67,9 +69,13 @@ void main()
 	int selected_playlist = 0;
 	playlist_t* current_playlist = playlists;
 
+	printf("done\n");
+	display_refresh();
+
 	char music_menu_loop = 0;
 
 	int pulse_pl = 0;
+	display_clear();
 	while(1){
 	    display_set_cursor(0,0);
 		display_set_front_back_color((pulse_pl+127)&255,pulse_pl);
