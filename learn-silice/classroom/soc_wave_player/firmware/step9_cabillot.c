@@ -91,20 +91,14 @@ void main()
 void play_music_callback(char* loop, char* buffer){
 	if(*BUTTONS & BTN_LEFT){
 		*loop = 0;// set loop to 0 to stop the main loop in read_audio_file
-		// set_led(255, 1);
 	}
 	unsigned int value = 0;
-	for(int i=0; i<AUDIO_BLOCK_SIZE; i++){
-		value += buffer[i]>=100 ? buffer[i]-100 : 0;
-	}
-	/*for(int l=0; l<8; l++)
-		set_led(((value>>l) & 0x01) ? 255 : 0, l);*/
-	for(int l=7; l>=0; l--){
-		if((value>>l) & 0x01){
-			for(int j=0; j<=l; j++)
-				set_led(255, j);
-			break;
-		}
+	for(int i=0; i<AUDIO_BLOCK_SIZE; i++)
+		value += buffer[i] & 0x7F;
+	value = value >> 9; // value/(AUDIO_BLOCK_SIZE:=512) we compute the mean of the absolute value of the samples in the buffer
+	value = value>48 ? (value-48)>>2 : 0; // if v>48 v = (v-48)*8/32 := (v-48)/4 else v = 0
+	for(int l=0; l<=value; l++)
+		set_led(255, l);
+	for(int l=value+1; l<8; l++)
 		set_led(0, l);
-	}
 }

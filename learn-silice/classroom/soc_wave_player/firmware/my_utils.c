@@ -89,11 +89,14 @@ void read_audio_file(const char* path, void (*loop_callback)(char*, char*)){
 	}
     char loop = 1;
 	while(loop){
-		int* addr = (int*)(*AUDIO);
-		int sz = fl_fread(addr, 1, AUDIO_BLOCK_SIZE, f);
+		char* addr = (char*)(*AUDIO);
+        char buffer[AUDIO_BLOCK_SIZE];
+		int sz = fl_fread(buffer, 1, AUDIO_BLOCK_SIZE, f);
 		if(sz<AUDIO_BLOCK_SIZE) break; // EOF
-		while(addr == (int*)(*AUDIO)){ // wait for buffer swap
-            if(loop_callback != NULL) loop_callback(&loop, (char*)addr);
+        for(int k=0; k<AUDIO_BLOCK_SIZE; k++)
+            addr[k] = buffer[k];
+		while(addr == (char*)(*AUDIO)){ // wait for buffer swap
+            if(loop_callback != NULL) loop_callback(&loop, buffer);
         }
 	}
     LEDS_OFF();
