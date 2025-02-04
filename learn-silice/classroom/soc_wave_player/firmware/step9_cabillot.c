@@ -99,6 +99,10 @@ void play_music_callback(char* loop, char* buffer, char* pause){
 			*pause = !*pause;
 			while(*BUTTONS & BTN_RIGHT); // wait for button release
 	}
+	if(*pause || !*loop){
+		LEDS_OFF();
+		return;
+	}
 	unsigned int value = 0;
 	for(int i=0; i<AUDIO_BLOCK_SIZE; i++)
 		value += buffer[i] & 0x7F;
