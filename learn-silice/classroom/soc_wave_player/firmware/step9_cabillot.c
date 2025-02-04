@@ -45,6 +45,7 @@ void main()
 
 	music_info_t musics[MAX_MUSICS];
 	const int n_musics = list_music(musics);
+	check_image(musics, n_musics);
 	playlist_t all_musics;
 	all_musics.size = n_musics;
 	strcpy(all_musics.name, "All musics");

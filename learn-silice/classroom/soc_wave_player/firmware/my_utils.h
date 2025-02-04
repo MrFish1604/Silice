@@ -34,8 +34,10 @@ void clprint(const char* str);
 void clear_audio();
 void read_audio_file(const char* path, void (*loop_callback)(char*, char*, char*));
 
+void display_image_rgb(const char* path, const unsigned char size);
 
 void strncat(char* dest, const char* src, int n);
+char strequ(const char* s1, const char* s2);
 
 
 #endif

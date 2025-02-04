@@ -114,3 +114,33 @@ void strncat(char* dest, const char* src, int n){
     }
     dest[i+n] = '\0';
 }
+
+void display_image_rgb(const char* path, const unsigned char size){
+    FL_FILE *f = fl_fopen(path, "rb");
+    if (f == NULL) {
+        // error, no file
+        printf("DIR: file not found.\n");
+        printf("%s\n", path);
+        display_refresh();
+        return;
+    }
+    char buffer[3];
+    while(1){
+        int s = fl_fread(buffer, 1, 3, f);
+        if(s<3) break;
+        oled_pix(buffer[0]>>2, buffer[1]>>2, buffer[2]>>2);
+        oled_wait();
+    }
+    fl_fclose(f);
+
+        
+}
+
+char strequ(const char* s1, const char* s2){
+    int i = 0;
+    while(s1[i] != '\0' && s2[i] != '\0'){
+        if(s1[i] != s2[i]) return 0;
+        i++;
+    }
+    return s1[i] == s2[i];
+}
