@@ -10,7 +10,7 @@
 
 #include "fat_io_lib/src/fat_filelib.h"
 
-void play_music_callback(char* loop, char* buffer);
+void play_music_callback(char* loop, char* buffer, char* pause);
 
 void main()
 {
@@ -88,15 +88,22 @@ void main()
 
 }
 
-void play_music_callback(char* loop, char* buffer){
-	if(*BUTTONS & BTN_LEFT){
-		*loop = 0;// set loop to 0 to stop the main loop in read_audio_file
+void play_music_callback(char* loop, char* buffer, char* pause){
+	switch(*BUTTONS & ~0x1){
+		case BTN_LEFT:
+			*loop = 0;
+			*pause = 0;
+			break;
+		case BTN_RIGHT:
+			if(!*pause) clear_audio();
+			*pause = !*pause;
+			while(*BUTTONS & BTN_RIGHT); // wait for button release
 	}
 	unsigned int value = 0;
 	for(int i=0; i<AUDIO_BLOCK_SIZE; i++)
 		value += buffer[i] & 0x7F;
 	value = value >> 9; // value/(AUDIO_BLOCK_SIZE:=512) we compute the mean of the absolute value of the samples in the buffer
-	value = value>48 ? (value-48)>>2 : 0; // if v>48 v = (v-48)*8/32 := (v-48)/4 else v = 0
+	value = value>48 ? (value-48)>>2 : 0; // if v>48 v = (v-48)*8/32 := (v-48)/4 else v = 0 (this maps values from [48, 80] to [0, 8]) (see musics/test_led_pattern.py)
 	for(int l=0; l<=value; l++)
 		set_led(255, l);
 	for(int l=value+1; l<8; l++)

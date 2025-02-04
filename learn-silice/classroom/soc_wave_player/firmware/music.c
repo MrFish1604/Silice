@@ -31,7 +31,7 @@ char list_music(music_info_t* musics){
     return n_files;
 }
 
-void play_music(const music_info_t* music, void (*loop_callback)(char*, char*)){
+void play_music(const music_info_t* music, void (*loop_callback)(char*, char*, char*)){
     display_clear();
     display_set_cursor(0,0);
     display_set_front_back_color(255, 0);
