@@ -64,12 +64,37 @@ void main()
 	    clprint("SD_CARD ERROR");
 	}
 
-	playlist_t* current_playlist = playlists+1;
+	int selected_playlist = 0;
+	playlist_t* current_playlist = playlists;
+
+	char music_menu_loop = 0;
+
+	while(1){
+	    display_clear();
+	    display_set_cursor(0,0);
+		display_set_front_back_color(0, 255);
+		printf("Playlists\n");
+		for(int i=0; i<n_playlists; i++){
+            display_set_front_back_color(i==selected_playlist ? 0 : 255, i==selected_playlist ? 255 : 0);
+            printf("%d> %s  %d\n", i, playlists[i].name, playlists[i].size);
+        }
+		display_refresh();
+		if(*BUTTONS & BTN_UP){
+		    selected_playlist = (selected_playlist==0 ? n_playlists : selected_playlist)-1;
+		}
+		if(*BUTTONS & BTN_DOWN){
+            selected_playlist = selected_playlist==n_playlists-1 ? 0 : selected_playlist+1;
+        }
+		if(*BUTTONS & BTN_RIGHT){
+		    current_playlist = playlists + selected_playlist;
+            music_menu_loop = 1;
+            while(*BUTTONS & BTN_RIGHT); // wait for button release
+        }
 
 
 	int pulse = 0;
 	int current_music = 1;
-	while(1){
+	while(music_menu_loop){
 		display_set_cursor(0,0);
 		display_set_front_back_color(0, 255);
 		display_clear();
@@ -85,19 +110,19 @@ void main()
 			current_music = (current_music==0 ? current_playlist->size : current_music)-1;
 		}
 		if(*BUTTONS & BTN_DOWN){
-			current_music = (current_music+1)%current_playlist->size;
+			current_music = current_music==current_playlist->size-1 ? 0 : current_music+1;
 		}
 		if(*BUTTONS & BTN_RIGHT){
 			int signal = play_music(current_playlist->musics[current_music], play_music_callback);
 			while(signal){
 				if(signal == 1){
-					if(current_music == current_playlist->size-1){
+				    if(current_music == current_playlist->size-1){
 						current_music = 0;
 						break;
 					}
 					current_music++;
 				}
-				else if(signal == 2){
+			    else if(signal == 2){
 					current_music = (current_music==current_playlist->size-1 ? 0 : current_music+1);
 				}
 				else if(signal == 3){
@@ -105,6 +130,12 @@ void main()
 				}
 				signal = play_music(current_playlist->musics[current_music], play_music_callback);
 			}
+			while(*BUTTONS & BTN_RIGHT);
+			while(*BUTTONS & BTN_LEFT); // wait for buttons release
+		}
+		if(*BUTTONS & BTN_LEFT){
+		    music_menu_loop = 0;
+			while(*BUTTONS & BTN_LEFT); // wait for button release
 		}
 	}
 	}
