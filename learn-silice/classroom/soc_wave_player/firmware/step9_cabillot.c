@@ -69,10 +69,11 @@ void main()
 
 	char music_menu_loop = 0;
 
+	int pulse_pl = 0;
 	while(1){
-	    display_clear();
 	    display_set_cursor(0,0);
-		display_set_front_back_color(0, 255);
+		display_set_front_back_color((pulse_pl+127)&255,pulse_pl);
+		pulse_pl += 7;
 		printf("Playlists\n");
 		for(int i=0; i<n_playlists; i++){
             display_set_front_back_color(i==selected_playlist ? 0 : 255, i==selected_playlist ? 255 : 0);
@@ -96,8 +97,8 @@ void main()
 	int current_music = 1;
 	while(music_menu_loop){
 		display_set_cursor(0,0);
-		display_set_front_back_color(0, 255);
-		display_clear();
+		display_set_front_back_color((pulse+127)&255,pulse);
+		pulse += 7;
 		printf("%s\n", current_playlist->name);
 
 		for(int i=0; i<current_playlist->size; i++){
@@ -130,11 +131,13 @@ void main()
 				}
 				signal = play_music(current_playlist->musics[current_music], play_music_callback);
 			}
+			display_clear();
 			while(*BUTTONS & BTN_RIGHT);
 			while(*BUTTONS & BTN_LEFT); // wait for buttons release
 		}
 		if(*BUTTONS & BTN_LEFT){
 		    music_menu_loop = 0;
+			display_clear();
 			while(*BUTTONS & BTN_LEFT); // wait for button release
 		}
 	}
