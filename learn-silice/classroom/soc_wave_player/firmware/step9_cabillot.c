@@ -62,10 +62,11 @@ void main()
 	music_info_t musics[MAX_MUSICS];
 	const int n_musics = list_music(musics);
 	check_image(musics, n_musics);
-	playlist_t playlists[MAX_FILES];
+	playlist_t playlists[MAX_FILES]; // playlists[0] is the "All musics" playlist
 	playlists->size = n_musics;
 	strcpy(playlists->name, "All musics");
 	for(int i=0; i<n_musics; i++) playlists->musics[i] = musics + i;
+	memset(playlists->musics+n_musics, (int)NULL, MAX_FILES - playlists->size);
 	if(n_musics==0){
 		clprint("No music found");
 		return;

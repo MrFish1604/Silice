@@ -113,6 +113,7 @@ char create_playlist(const char* name, playlist_t* playlist, music_info_t* music
         cursor++;
     }
     fl_fclose(f);
+    memset(playlist->musics+playlist->size, (int)NULL, MAX_MUSICS - playlist->size);
     return playlist->size;
 }
 
