@@ -5,7 +5,7 @@
 #define PLAYLIST_DIR "/playlists/"
 
 #define MAX_PATH_LENGTH 128
-#define MAX_MUSIC_NAME_LENGTH 64
+#define MAX_MUSIC_NAME_LENGTH 25 // Based on the width of the OLED screen
 #define MAX_MUSICS 32
 
 #define MAX_FILE_SIZE 512

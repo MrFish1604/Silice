@@ -10,6 +10,20 @@
 
 #include "fat_io_lib/src/fat_filelib.h"
 
+#define PADDING_CHAR ' '
+
+#define PRINT_CENTERED_WITH_PADDING(str) const int len = strlen(str);\
+        if(len >= MAX_MUSIC_NAME_LENGTH) printf("%s\n", str);\
+        else{\
+            const int n_padding = (MAX_MUSIC_NAME_LENGTH - len) >> 1;\
+            padding[n_padding] = '\0';\
+            printf("%s", padding);\
+            printf("%s", str);\
+            if(n_padding & 1) printf("%c", PADDING_CHAR);\
+            printf("%s\n", padding);\
+            padding[n_padding] = PADDING_CHAR;\
+        }
+
 void play_music_callback(char* loop, char* buffer, char* pause, char* output_signal);
 
 void main()
@@ -73,6 +87,9 @@ void main()
 	display_refresh();
 
 	char music_menu_loop = 0;
+	char padding[MAX_MUSIC_NAME_LENGTH+1];
+	padding[MAX_MUSIC_NAME_LENGTH] = '\0';
+	memset(padding, PADDING_CHAR, MAX_MUSIC_NAME_LENGTH);
 
 	int pulse_pl = 0;
 	display_clear();
@@ -80,10 +97,14 @@ void main()
 	    display_set_cursor(0,0);
 		display_set_front_back_color((pulse_pl+127)&255,pulse_pl);
 		pulse_pl += 7;
-		printf("Playlists\n");
+		PRINT_CENTERED_WITH_PADDING("Playlists");
 		for(int i=0; i<n_playlists; i++){
             display_set_front_back_color(i==selected_playlist ? 0 : 255, i==selected_playlist ? 255 : 0);
-            printf("%d> %s  %d\n", i, playlists[i].name, playlists[i].size);
+            printf("%d> %s", i, playlists[i].name);
+            int n_padding = MAX_MUSIC_NAME_LENGTH - strlen(playlists[i].name) - 4 - (i>=10) - (playlists[i].size>=10); // playlist_t.size <= 32 so we can't have more than 2 digits
+            padding[n_padding] = '\0';
+            printf("%s%d\n", padding, playlists[i].size);
+            padding[n_padding] = PADDING_CHAR;
         }
 		display_refresh();
 		if(*BUTTONS & BTN_UP){
@@ -95,6 +116,7 @@ void main()
 		if(*BUTTONS & BTN_RIGHT){
 		    current_playlist = playlists + selected_playlist;
             music_menu_loop = 1;
+            display_clear();
             while(*BUTTONS & BTN_RIGHT); // wait for button release
         }
 
@@ -105,7 +127,8 @@ void main()
 		display_set_cursor(0,0);
 		display_set_front_back_color((pulse+127)&255,pulse);
 		pulse += 7;
-		printf("%s\n", current_playlist->name);
+		// printf("%s\n", current_playlist->name);
+		PRINT_CENTERED_WITH_PADDING(current_playlist->name);
 
 		for(int i=0; i<current_playlist->size; i++){
 			display_set_front_back_color(i==current_music ? 0 : 255, i==current_music ? 255 : 0);
