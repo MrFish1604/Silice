@@ -86,6 +86,8 @@ char play_music(const music_info_t* music, void (*loop_callback)(char*, char*, c
 }
 
 char create_playlist(const char* name, playlist_t* playlist, music_info_t* musics, int n_musics){
+    if(strlen(name) == PL_NAME_SIZE_THAT_CREATES_A_BUG)
+        return 0;
     strncpy(playlist->name, name, MAX_MUSIC_NAME_LENGTH);
     playlist->size = 0;
     char path[MAX_PATH_LENGTH] = PLAYLIST_DIR;
@@ -125,9 +127,11 @@ char list_playlist(playlist_t* playlists, music_info_t* musics, int n_musics){
     char n_files = 0;
     while(fl_readdir(&dirstat, &dirent) == 0){
         if(dirent.is_dir) continue;
-        if(create_playlist(dirent.filename, playlists+n_files, musics, n_musics)<0)
+        const char s = create_playlist(dirent.filename, playlists+n_files, musics, n_musics);
+        if(s<0)
             return -1;
-        n_files++;
+        if(s>0) // ignore empty playlists
+            n_files++;
     }
     fl_closedir(&dirstat);
     return n_files;

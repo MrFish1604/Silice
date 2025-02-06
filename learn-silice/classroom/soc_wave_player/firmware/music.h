@@ -8,7 +8,7 @@
 #define MAX_MUSIC_NAME_LENGTH 25 // Based on the width of the OLED screen
 #define MAX_MUSICS 32
 
-#define MAX_FILE_SIZE 512
+#define PL_NAME_SIZE_THAT_CREATES_A_BUG 11 // I don't know why but fl_open returns NULL if the filename is 11 characters long. (>=12 works btw) \_(O.O))_/
 
 struct music_info{
     char has_img;
