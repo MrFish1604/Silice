@@ -12,6 +12,8 @@
 
 #define PADDING_CHAR ' '
 
+#define MAX_LISTED_ITEMS 12
+
 #define PRINT_CENTERED_WITH_PADDING(str) const int len = strlen(str);\
         if(len >= MAX_MUSIC_NAME_LENGTH) printf("%s\n", str);\
         else{\
@@ -62,6 +64,9 @@ void main()
 	music_info_t musics[MAX_MUSICS];
 	const int n_musics = list_music(musics);
 	check_image(musics, n_musics);
+	printf("done\n");
+	printf("Loading playlists ...");
+	display_refresh();
 	playlist_t playlists[MAX_FILES]; // playlists[0] is the "All musics" playlist
 	playlists->size = n_musics;
 	strcpy(playlists->name, "All musics");
@@ -93,26 +98,52 @@ void main()
 	memset(padding, PADDING_CHAR, MAX_MUSIC_NAME_LENGTH);
 
 	int pulse_pl = 0;
+	int menu_start_pl_item = 0;
 	display_clear();
 	while(1){
 	    display_set_cursor(0,0);
 		display_set_front_back_color((pulse_pl+127)&255,pulse_pl);
 		pulse_pl += 7;
 		PRINT_CENTERED_WITH_PADDING("Playlists");
-		for(int i=0; i<n_playlists; i++){
-            display_set_front_back_color(i==selected_playlist ? 0 : 255, i==selected_playlist ? 255 : 0);
-            printf("%d> %s", i, playlists[i].name);
-            int n_padding = MAX_MUSIC_NAME_LENGTH - strlen(playlists[i].name) - 4 - (i>=10) - (playlists[i].size>=10); // playlist_t.size <= 32 so we can't have more than 2 digits
+		int n_print_pl;
+		if(menu_start_pl_item>0){
+            display_set_front_back_color(255, 0);
+            printf("...\n");
+        }
+		for(n_print_pl=menu_start_pl_item; n_print_pl<n_playlists && n_print_pl-menu_start_pl_item<MAX_LISTED_ITEMS; n_print_pl++){
+            display_set_front_back_color(n_print_pl==selected_playlist ? 0 : 255, n_print_pl==selected_playlist ? 255 : 0);
+            printf("%d> %s", n_print_pl, playlists[n_print_pl].name);
+            int n_padding = MAX_MUSIC_NAME_LENGTH - strlen(playlists[n_print_pl].name) - 4 - (n_print_pl>=10) - (playlists[n_print_pl].size>=10); // playlist_t.size <= 32 so we can't have more than 2 digits
             padding[n_padding] = '\0';
-            printf("%s%d\n", padding, playlists[i].size);
+            printf("%s%d\n", padding, playlists[n_print_pl].size);
             padding[n_padding] = PADDING_CHAR;
         }
+		if(n_print_pl<n_playlists){
+		    display_set_front_back_color(255, 0);
+            printf("...\n");
+		}
+
 		display_refresh();
 		if(*BUTTONS & BTN_UP){
 		    selected_playlist = (selected_playlist==0 ? n_playlists : selected_playlist)-1;
+			if((selected_playlist+1)%MAX_LISTED_ITEMS==0){
+                menu_start_pl_item = selected_playlist - MAX_LISTED_ITEMS + 1;
+                display_clear();
+                display_set_cursor(0, 0);
+            }
+			else if(selected_playlist == n_playlists-1){
+                menu_start_pl_item = selected_playlist - n_playlists%MAX_LISTED_ITEMS;
+                display_clear();
+                display_set_cursor(0, 0);
+            }
 		}
 		if(*BUTTONS & BTN_DOWN){
             selected_playlist = selected_playlist==n_playlists-1 ? 0 : selected_playlist+1;
+            if(selected_playlist%MAX_LISTED_ITEMS==0){
+                menu_start_pl_item = selected_playlist;
+                display_clear();
+                display_set_cursor(0, 0);
+            }
         }
 		if(*BUTTONS & BTN_RIGHT){
 		    current_playlist = playlists + selected_playlist;
@@ -123,25 +154,49 @@ void main()
 
 
 	int pulse = 0;
-	int current_music = 1;
+	int current_music = 0;
+	int menu_start_item = 0;
 	while(music_menu_loop){
 		display_set_cursor(0,0);
 		display_set_front_back_color((pulse+127)&255,pulse);
 		pulse += 7;
 		// printf("%s\n", current_playlist->name);
 		PRINT_CENTERED_WITH_PADDING(current_playlist->name);
-
-		for(int i=0; i<current_playlist->size; i++){
-			display_set_front_back_color(i==current_music ? 0 : 255, i==current_music ? 255 : 0);
-			printf("%d> %s\n", i, current_playlist->musics[i]->name);
+		int n_printed_items;
+		if(menu_start_item>0){
+            display_set_front_back_color(255, 0);
+            printf("...\n");
+        }
+		for(n_printed_items=menu_start_item; n_printed_items<current_playlist->size && n_printed_items-menu_start_item<MAX_LISTED_ITEMS; n_printed_items++){
+			display_set_front_back_color(n_printed_items==current_music ? 0 : 255, n_printed_items==current_music ? 255 : 0);
+			printf("%d> %s\n", n_printed_items, current_playlist->musics[n_printed_items]->name);
 		}
+		if(n_printed_items<current_playlist->size){
+            display_set_front_back_color(255, 0);
+            printf("...\n");
+        }
 		display_refresh();
 
 		if(*BUTTONS & BTN_UP){
 			current_music = (current_music==0 ? current_playlist->size : current_music)-1;
+			if((current_music+1)%MAX_LISTED_ITEMS==0){
+			    menu_start_item = current_music - MAX_LISTED_ITEMS + 1;
+                display_clear();
+                display_set_cursor(0, 0);
+            }
+            else if(current_music == current_playlist->size-1){
+                menu_start_item = current_playlist->size - current_playlist->size%MAX_LISTED_ITEMS;
+                display_clear();
+                display_set_cursor(0, 0);
+            }
 		}
 		if(*BUTTONS & BTN_DOWN){
 			current_music = current_music==current_playlist->size-1 ? 0 : current_music+1;
+			if(current_music%MAX_LISTED_ITEMS==0){
+			    menu_start_item = current_music;
+			    display_clear();
+				display_set_cursor(0, 0);
+			}
 		}
 		if(*BUTTONS & BTN_RIGHT){
 			int signal = play_music(current_playlist->musics[current_music], play_music_callback);
@@ -149,15 +204,18 @@ void main()
 				if(signal == 1){
 				    if(current_music == current_playlist->size-1){
 						current_music = 0;
+						menu_start_item = 0;
 						break;
 					}
 					current_music++;
 				}
 			    else if(signal == 2){
 					current_music = (current_music==current_playlist->size-1 ? 0 : current_music+1);
+					menu_start_item = MAX_LISTED_ITEMS*(current_music/MAX_LISTED_ITEMS);
 				}
 				else if(signal == 3){
 					current_music = (current_music==0 ? current_playlist->size : current_music) - 1;
+					menu_start_item = MAX_LISTED_ITEMS*(current_music/MAX_LISTED_ITEMS);
 				}
 				signal = play_music(current_playlist->musics[current_music], play_music_callback);
 			}

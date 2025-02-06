@@ -74,11 +74,11 @@ char read_audio_file(const char* path, void (*loop_callback)(char*, char*, char*
 	clear_audio();
 	FL_FILE *f = fl_fopen(path, "rb");
     int n = 0;
-    while(f==NULL && n<3){
+#define MAX_TRIES 1
+    while(f==NULL && (n++)<MAX_TRIES){
         printf("RAF: file not found.\n");
         display_refresh();
         f = fl_fopen(path, "rb");
-        n++;
     }
 	if (f == NULL) {
 		// error, no file
@@ -88,7 +88,9 @@ char read_audio_file(const char* path, void (*loop_callback)(char*, char*, char*
         while(path[k] != '\0'){
             printf("%d ", path[k++]);
         }
+        printf("\nPush button ZERO to continue\n");
 		display_refresh();
+		WAIT_INPUT();
 		return 0;
 	}
     char loop = 1;
