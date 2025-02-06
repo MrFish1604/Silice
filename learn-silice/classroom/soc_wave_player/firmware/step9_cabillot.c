@@ -26,7 +26,10 @@
             padding[n_padding] = PADDING_CHAR;\
         }
 
-void play_music_callback(char* loop, char* buffer, char* pause, char* output_signal);
+static int init_music_step = 0;
+
+void play_music_callback(char* loop, char* buffer, char* pause, char* output_signal, char* run_callback);
+void init_music_callback(char* loop, char* buffer, char* pause, char* output_signal, char* run_callback);
 
 void main()
 {
@@ -38,7 +41,7 @@ void main()
 	oled_init();
 	oled_fullscreen();
 
-	memset((void*)display_framebuffer(),0x00,128*128);
+	memset((void*)display_framebuffer(),0x00, DISPLAY_PIXELS);
 	display_refresh();
 
 	display_set_cursor(0,0);
@@ -90,7 +93,14 @@ void main()
 	playlist_t* current_playlist = playlists;
 
 	printf("done\n");
+	display_clear();
 	display_refresh();
+	init_music_step = 0;
+	read_audio_file(MUSIC_DIR INIT_MUSIC_FILENAME, init_music_callback);
+	for(;init_music_step<128*128; init_music_step++){
+	    oled_pix(0, 0, 0);
+		oled_wait();
+	}
 
 	char music_menu_loop = 0;
 	char padding[MAX_MUSIC_NAME_LENGTH+1];
@@ -233,7 +243,7 @@ void main()
 
 }
 
-void play_music_callback(char* loop, char* buffer, char* pause, char* output_signal){
+void play_music_callback(char* loop, char* buffer, char* pause, char* output_signal, char* run_callback){
 	switch(*BUTTONS & ~0x1){
 		case BTN_LEFT:
 			*loop = 0;
@@ -270,4 +280,18 @@ void play_music_callback(char* loop, char* buffer, char* pause, char* output_sig
 		set_led(255, l);
 	for(int l=value+1; l<8; l++)
 		set_led(0, l);
+}
+
+#define STEPS 512
+void init_music_callback(char* loop, char* buffer, char* pause, char* output_signal, char* run_callback){
+    if(init_music_step >= DISPLAY_PIXELS || !*run_callback) return;
+    for(int i=0; i<STEPS; i++){
+        int r = (init_music_step + i)/DISPLAY_WIDTH;
+        int c = (init_music_step + i)%DISPLAY_WIDTH;
+        int v = 255*((c>=33 && c<43 || c>=83 && c<93) || (c>=43 && c<83 && ( r>=10 && r<20 || r>=40 && r<50 || r>=70 && r<80 || r>=100 && r<110)));
+        oled_pix(v, v, v);
+        oled_wait();
+    }
+    init_music_step += STEPS;
+    *run_callback = 0;
 }

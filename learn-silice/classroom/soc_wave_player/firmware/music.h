@@ -3,6 +3,7 @@
 
 #define MUSIC_DIR "/musics/"
 #define PLAYLIST_DIR "/playlists/"
+#define INIT_MUSIC_FILENAME "music.raw"
 
 #define MAX_PATH_LENGTH 128
 #define MAX_MUSIC_NAME_LENGTH 25 // Based on the width of the OLED screen
@@ -27,7 +28,7 @@ typedef struct playlist playlist_t;
 char list_music(music_info_t* musics);
 char check_image(music_info_t* musics, int n_musics);
 
-char play_music(const music_info_t* music, void (*loop_callback)(char*, char*, char*, char*));
+char play_music(const music_info_t* music, void (*loop_callback)(char*, char*, char*, char*, char*));
 
 char create_playlist(const char* path, playlist_t* playlist, music_info_t* musics, int n_musics);
 char list_playlist(playlist_t* playlists, music_info_t* musics, int n_musics);

@@ -66,7 +66,7 @@ char check_image(music_info_t* musics, int n_musics){
     return n_files;
 }
 
-char play_music(const music_info_t* music, void (*loop_callback)(char*, char*, char*, char*)){
+char play_music(const music_info_t* music, void (*loop_callback)(char*, char*, char*, char*, char*)){
     if(music->has_img){
         char path[MAX_PATH_LENGTH] = IMAGE_DIR;
         strncat(path, music->name, MAX_PATH_LENGTH);
