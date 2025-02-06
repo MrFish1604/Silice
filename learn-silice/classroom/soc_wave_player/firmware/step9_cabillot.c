@@ -96,10 +96,12 @@ void main()
 	display_clear();
 	display_refresh();
 	init_music_step = 0;
-	read_audio_file(MUSIC_DIR INIT_MUSIC_FILENAME, init_music_callback);
-	for(;init_music_step<128*128; init_music_step++){
-	    oled_pix(0, 0, 0);
-		oled_wait();
+	if(!(*BUTTONS & BTN_ONE)){
+	   read_audio_file(MUSIC_DIR INIT_MUSIC_FILENAME, init_music_callback);
+	   for(;init_music_step<128*128; init_music_step++){
+	       oled_pix(0, 0, 0);
+	   	oled_wait();
+	   }
 	}
 
 	char music_menu_loop = 0;
