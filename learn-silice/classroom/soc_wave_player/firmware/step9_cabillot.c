@@ -144,7 +144,7 @@ void main()
                 display_set_cursor(0, 0);
             }
 			else if(selected_playlist == n_playlists-1){
-                menu_start_pl_item = selected_playlist - n_playlists%MAX_LISTED_ITEMS;
+                menu_start_pl_item = n_playlists - n_playlists%MAX_LISTED_ITEMS;
                 display_clear();
                 display_set_cursor(0, 0);
             }
