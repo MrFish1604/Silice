@@ -1,4 +1,7 @@
 # Classroom project: music player
+
+> The music files are copyright free and come from [Pixabay](https://pixabay.com/music).
+
 *Building a simple but feature complete SOC, with screen and audio, step by step.*
 
 ---
