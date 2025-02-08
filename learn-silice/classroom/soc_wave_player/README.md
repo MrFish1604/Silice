@@ -7,9 +7,41 @@ See the [original README](README_Original.md) for the original project descripti
 
 ## How to make
 ```sh
-make cabillot # Compile all the project and upload it to the FPGA
+make cabillot # Compile the whole project and upload it to the FPGA
+make CABILLOT_FIRMWARE=step9_cabillot.c cabillot # Compile the project with a custom firmware and upload it to the FPGA
 make reprog   # Upload the previously compiled project to the FPGA
 ```
+
+## Features
+- [x] Play music files in raw format
+  - [x] Play/Pause
+  - [x] Next/Previous
+  - [x] Returns to the menu
+- [x] Playlists
+  - [x] Order the musics however you want
+  - [x] Play the musics in the order of the playlist
+  - [x] Can contain the same music multiple times
+  - [x] A music doesn't take more space in the SD card when added to several playlists
+  - [x] The 'All musics' playlist is automatically created and contains all the musics found
+- [x] Display the associated image of the music being played
+  - [x] The image is displayed in color
+  - [x] Can't display a grayscale image
+  - [x] If no image is found, a text is displayed instead
+- [x] LED effect synchronized with the music being played
+- [x] Intro music on startup with an animation on the screen
+- [x] If a menu is too long for the screen, it can be scrolled
+
+## Behavior
+- When a the end of a music is reached, the next music in the playlist is played
+  - If it's the last music, we go back in the menu and the selection is on the first music
+- When the last music is skipped, the first music is played
+- When a music is paused, the LEDs are turned off
+
+- In the menu, keeping BTN_UP or BTN_DOWN pressed will continuously scroll the list
+- Elsewhere, buttons must be pressed and released to be taken into account
+
+
+
 
 ## What did I add
 
@@ -17,7 +49,7 @@ make reprog   # Upload the previously compiled project to the FPGA
   - It includes a unit for pwm and a unit for audio pwm
 - [step9_cabillot.c](firmware/step9_cabillot.c) contains the main program for the firmware
 - [my_utils.{h, c}](firmware/my_utils.h) is a library that contains my utility functions and macros
-- [music.{h, c}](firmware/music.h) is a library that contains to handle the music and playlists files
+- [music.{h, c}](firmware/music.h) is a library to handle the music and playlist files
 - [data](data) contains the files (musics, images, playlists) for music player
   - It's content should be copied as is in the root of the SD card
 
@@ -37,6 +69,8 @@ make reprog   # Upload the previously compiled project to the FPGA
   - Use `sh encode_music.sh <input_file.{mp3, wav}>; mv music.raw music_name.raw` to convert a music file to raw
 - They must be named as `music_name.{whateverYouWant}`
   - The part before the first dot will be used as the music name
+  - The name must be less than 26 characters long
+
 ### Images files
 - They must be in raw format
   - Use `python3 to_raw.py <input_file.{jpg, png, webp, ...}>` to convert an image file to raw
@@ -49,6 +83,7 @@ make reprog   # Upload the previously compiled project to the FPGA
 - The filename **is** the playlist name
 - A playlist can contain the same music multiple times
 - The order of the music in the playlist is the order they will be played in
+- The name must be less than 26 characters long
 
 ### Buttons
 I named the buttons as follow:
@@ -71,7 +106,8 @@ I named the buttons as follow:
 - **BTN_ZERO**: Discard an error message
 
 ## Known issues
-- A playlist's name can't be **11 characters long**
+- A playlist's name can't be **11 characters long** (>=12 doesn't cause any problem)
+  - I then made the create_playlist function in [music.h](firmware/music.h) to ignore such files
   - I think it might be an issue with the fat library
     - Maybe because of [fat_access.c](https://github.com/ultraembedded/fat_io_lib/blob/0ef5c2bbc0ab2ff96d970a2149764d8fc377eb33/src/fat_access.c) lines 548, 656, 726 (I didn't test it though)
 - There was some music files that crashed the player
