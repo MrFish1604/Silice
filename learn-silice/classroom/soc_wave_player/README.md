@@ -104,10 +104,10 @@ I named the buttons as follow:
 
 ## LED effect algorithm
 1. For each audio block read (512 bytes), we compute the average of values (ignoring the bit of sign)
-  - For that we compute the sum then we right shift by 9 (since we divide by 512)
-  - Let's call it `v`
+    - For that we compute the sum then we right shift by 9 (since we divide by 512)
+    - Let's call it `v`
 2. Then we want to map this value from [48, 80] to [0, 8] if it's greater than 48
-  - $v := (v - 48)\frac{8-0}{80-48} = (v - 48)/4 = (v - 48) >> 2$
+    - $v := (v - 48)\frac{8-0}{80-48} = (v - 48)/4 = (v - 48) >> 2$
 3. We then set the LEDs from 0 to `v` to 255 and the others to 0
 
 ```c
