@@ -118,6 +118,8 @@ value = value>48 ? (value - 48) >> 2 : 0;
 // Then set the LEDs
 ```
 
+> I made [this python script](musics/test_led_pattern.py) to find this algorithm.
+
 ## Known issues
 - A playlist's name can't be **11 characters long** (>=12 doesn't cause any problem)
   - I then made the create_playlist function in [music.h](firmware/music.h) to ignore such files
