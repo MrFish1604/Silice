@@ -73,7 +73,7 @@ I named the buttons as follow:
 ## Known issues
 - A playlist's name can't be **11 characters long**
   - I think it might be an issue with the fat library
-    - Maybe because of [fat_access.c](firmware/fat_io_lib/src/fat_access.c) lines 548, 656, 726 (I didn't test it though)
+    - Maybe because of [fat_access.c](https://github.com/ultraembedded/fat_io_lib/blob/0ef5c2bbc0ab2ff96d970a2149764d8fc377eb33/src/fat_access.c) lines 548, 656, 726 (I didn't test it though)
 - There was some music files that crashed the player
   - I didn't find the reason
   - All the files in [data/musics](data/musics) should work
