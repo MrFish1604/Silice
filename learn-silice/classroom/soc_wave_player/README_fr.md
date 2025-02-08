@@ -4,9 +4,9 @@
 
 ## Comment compiler
 ```sh
-make cabillot # Compile tout le projet et le télécharge sur la FPGA
-make CABILLOT_FIRMWARE=step9_cabillot.c cabillot # Compile le projet avec un firmware personnalisé et le télécharge sur la FPGA
-make reprog   # Télécharge le projet précédemment compilé sur la FPGA
+make cabillot # Compile tout le projet et le télécharge sur le FPGA
+make CABILLOT_FIRMWARE=step9_cabillot.c cabillot # Compile le projet avec un firmware personnalisé et le télécharge sur le FPGA
+make reprog   # Télécharge le projet précédemment compilé sur le FPGA
 ```
 
 ## Fonctionnalités
@@ -55,7 +55,7 @@ make reprog   # Télécharge le projet précédemment compilé sur la FPGA
   - 'playlists' contenant les fichiers de listes de lecture
 - Il doit y avoir un fichier musical nommé 'music.raw' dans le dossier 'musics'
   - Il sera joué comme musique d'introduction au démarrage
-  - Si aucun fichier de ce type n'est pas trouvé, un message d'erreur sera affiché. Appuyez sur BTN_ONE pour le rejeter.
+  - Si aucun fichier de ce type n'est trouvé, un message d'erreur sera affiché. Appuyez sur BTN_ONE pour le rejeter.
   - Il est recommandé d'utiliser le fichier [data/musics/music.raw](data/musics/music.raw)
 
 ### Fichiers musicaux
@@ -87,28 +87,28 @@ J'ai nommé les boutons comme suit:
 
 - **BTN_LEFT**: Retourne au menu précédent
 - **BTN_RIGHT**:
-  - *Dans un menu*: Sélection la playlist ou la musique
-  - *Dans le lecteur de musique*: Pause/Reprend la musique
+  - *Dans un menu*: Valide la sélection de la playlist ou de la musique
+  - *Pendant la lecture d'une musique*: Pause/Reprend la musique
 - **BTN_UP**:
   - *Dans un menu*: Monte dans la liste
-  - *Dans le lecteur de musique*: Joue la musique précédente
+  - *Pendant la lecture d'une musique*: Joue la musique précédente
 - **BTN_DOWN**:
   - *Dans un menu*: Descend dans la liste
-  - *Dans le lecteur de musique*: Joue la musique suivante
-- **BTN_ONE**: Maintenez enfoncé pendant l'initialisation pour sauter la musique d'introduction
+  - *Pendant la lecture d'une musique*: Joue la musique suivante
+- **BTN_ONE**: Maintenir enfoncé pendant l'initialisation pour sauter la musique d'introduction
 - **BTN_ZERO**: Passer un message d'erreur
 
 ## Algorithme pour l'effet de lumière des LEDs
 1. Pour chaque bloc audio lu (512 octets), nous calculons la moyenne des valeurs (en ignorant le bit de signe)
-    - Pour cela, nous calculons la somme puis right shift par 9 (puisque nous divisons par 512)
+    - Pour cela, nous calculons la somme qu'on right shift par 9 (puisque nous divisons par 512)
     - Appelons cette valeur `v`
-2. Ensuite, on veut mapper cette valeur de [48, 80] à [0, 8] si elle est supérieure à 48
+2. Ensuite, on veut mapper `v` de $[48, 80]$ à $[0, 8]$ si elle est supérieure à 48
     - $v := (v - 48)\frac{8-0}{80-48} = (v - 48)/4 = (v - 48) >> 2$
 3. Enfin, on allume les LEDs de 0 à `v` et on éteint les autres
 
 ```c
-unsigned int v = 0;
-for(int i=0; i<512; i++) value += buffer[i] & 0x7F;
+unsigned int v = buffer[0];
+for(int i=1; i<512; i++) value += buffer[i] & 0x7F;
 value = value >> 9;
 value = value>48 ? (value - 48) >> 2 : 0;
 // Then set the LEDs
@@ -116,7 +116,7 @@ value = value>48 ? (value - 48) >> 2 : 0;
 
 
 ## Problèmes connus
-- Le nom d'une playlist ne doit pas contenir **11 caractères** (>=12 ne pause pas de problème)
+- Le nom d'une playlist ne doit pas contenir **11 caractères** (>=12 ne cause pas de problème)
   - Je pense que cela peut venir de la fat library
     - Peut-être à cause de [fat_access.c](https://github.com/ultraembedded/fat_io_lib/blob/0ef5c2bbc0ab2ff96d970a2149764d8fc377eb33/src/fat_access.c) lignes 548, 656, 726 (je n'ai pas testé)
 - Il y avait des fichiers musicaux qui faisaient planter le lecteur
