@@ -32,16 +32,13 @@ make reprog   # Upload the previously compiled project to the FPGA
 - [x] If a menu is too long for the screen, it can be scrolled
 
 ## Behavior
-- When a the end of a music is reached, the next music in the playlist is played
+- When the end of a music is reached, the next music in the playlist is played
   - If it's the last music, we go back in the menu and the selection is on the first music
 - When the last music is skipped, the first music is played
 - When a music is paused, the LEDs are turned off
 
 - In the menu, keeping BTN_UP or BTN_DOWN pressed will continuously scroll the list
-- Elsewhere, buttons must be pressed and released to be taken into account
-
-
-
+- Elsewhere, buttons must be pressed and released to be taken into account (debouncing)
 
 ## What did I add
 
@@ -104,6 +101,22 @@ I named the buttons as follow:
   - *While playing a music:* Play the next music
 - **BTN_ONE**: Keep pressed while initialization to skip the intro music
 - **BTN_ZERO**: Discard an error message
+
+## LED effect algorithm
+1. For each audio block read (512 bytes), we compute the average of values (ignoring the bit of sign)
+  - For that we compute the sum then we right shift by 9 (since we divide by 512)
+  - Let's call it `v`
+2. Then we want to map this value from [48, 80] to [0, 8] if it's greater than 48
+  - $v := (v - 48)\frac{8-0}{80-48} = (v - 48)/4 = (v - 48) >> 2$
+3. We then set the LEDs from 0 to `v` to 255 and the others to 0
+
+```c
+unsigned int v = 0;
+for(int i=0; i<512; i++) value += buffer[i] & 0x7F;
+value = value >> 9;
+value = value>48 ? (value - 48) >> 2 : 0;
+// Then set the LEDs
+```
 
 ## Known issues
 - A playlist's name can't be **11 characters long** (>=12 doesn't cause any problem)
